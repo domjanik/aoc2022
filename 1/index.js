@@ -21,5 +21,5 @@ function sumOfReachest3() {
     return getElvesCalories().sort((a,b) => b-a).slice(0,3).reduce((prevValue, currentValue) => currentValue+prevValue, 0);
 }
 
-console.log("Reachest Elf: ", reachestElf());
-console.log("Sum of reachest 3 Elves: ", sumOfReachest3());
+console.log("Richest Elf: ", reachestElf());
+console.log("Sum of richest 3 Elves: ", sumOfReachest3());
