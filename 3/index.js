@@ -48,6 +48,5 @@ function calcGroupedDoubledItemsPriority() {
         return prevVal + POINTS[currVal]
     }, 0)
 }
-
 console.log("p1 priority: ", calcDoubledItemsPriority());
 console.log("p2 priority: ", calcGroupedDoubledItemsPriority());
