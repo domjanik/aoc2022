@@ -40,8 +40,8 @@ class RopeEnd{
     }
 
     findDistance(x,y) {
-        let diffX = Math.abs(this.x - x);
-        let diffY = Math.abs(this.y - y);
+        let diffX = this.x - x;
+        let diffY = this.y - y;
 
         return {x: diffX, y: diffY};
     }
@@ -70,7 +70,7 @@ class Rope {
         }
     }
 
-    applyMove(move, moveId) {
+    applyMove(move, moveId, stepId) {
         let testPrevPosition;
         this.tailSegments.forEach((tailSegment, index) => {
             if(index == 0) {
@@ -79,26 +79,38 @@ class Rope {
             } else {
                 let prevSegment = this.tailSegments[index-1];
                 let diff = tailSegment.findDistance(prevSegment.x, prevSegment.y);
-                
-                if (diff.x > 1 || diff.y > 1) {
-                    tailSegment.applyMove(null, {x: testPrevPosition.x, y: testPrevPosition.y});
+                let tempPrevPos = {x: tailSegment.x,y: tailSegment.y};
+                if (Math.abs(diff.x) > 1 || Math.abs(diff.y) > 1) {
+                    if(diff.x > 0) {
+                        tempPrevPos.x--;
+                    } else if (diff.x < 0) {
+                        tempPrevPos.x++;
+                    }
+                    if(diff.y > 0)  {
+                        tempPrevPos.y--;
+                    } else if(diff.y < 0) {
+                        tempPrevPos.y++;
+                    }
+                    tailSegment.applyMove(null, {x: tempPrevPos.x
+                        , y: tempPrevPos.y});
                 }
-                testPrevPosition = {x: tailSegment.x, y: tailSegment.y};
+                testPrevPosition = {x: tempPrevPos.x, y: tempPrevPos.y};
             }
         })
     }
 }
 
-function calcTailPositions() {
-    const rope = new Rope(2);
+function calcTailPositions(segments) {
+    const rope = new Rope(segments);
 
-    input.forEach((move) => {
+    input.forEach((move, moveId) => {
         for(let i=0; i < move.distance; i++) {
-            rope.applyMove(move, i);
+            rope.applyMove(move, moveId,i);
         }
     })
 
     return [...new Set(rope.tailSegments[rope.tailSegments.length - 1].visitedFields)].length;
 }
 
-console.log("Tail positions: " + calcTailPositions());
+console.log("Tail positions with 2 segments: " + calcTailPositions(2));
+console.log("Tail positions with 10 segments: " + calcTailPositions(10));
