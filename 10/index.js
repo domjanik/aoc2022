@@ -90,10 +90,6 @@ async function executeCycle() {
         }
     }
 
-    // let drawningRows = [];
-    // for(let rows = 0; rows < 6; rows++){
-    //     drawningRows.push(DRAWING.slice(40*rows, 40*(rows+1)));
-    // }
     test.map((row) => {
         let testRow = row.replaceAll('.', ' ').replaceAll('#', '█')
         console.log(testRow);
