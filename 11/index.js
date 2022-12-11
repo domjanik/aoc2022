@@ -5,8 +5,6 @@ const input = fs
 let dividers = [];
 let monkeyList = [];
 
-let showLogs = false;
-
 class Monkey {
     items;
     divider;
@@ -49,7 +47,6 @@ class Monkey {
         this.items.forEach((item) => {
             let worryLevel = BigInt(this.operation(item));
             worryLevel = worryLevel / worryDivider;
-            // showLogs && console.log('item: ' + item + " worryLevel: " + worryLevel + " Dividable :" + (worryLevel % this.divider === 0n) + " goes to Monkey " + (worryLevel % this.divider === 0n ? this.onConditionMet : this.onConditionNotMet))
             let test = worryLevel % dividers.reduce((prev, curr)=> prev*curr , 1n);
             if(test % this.divider === 0n) {
                 monkeyList[this.onConditionMet].items.push(test);
@@ -68,8 +65,6 @@ function prepareMonkeys() {
     let tempMonkeyList = [];
     for(i = 0; i < monkeysCount; i++) {
         tempMonkeyList.push(input.slice(i*7, (i+1) * 7));
-
-        showLogs && console.log(input.length);
     }
     monkeyList = tempMonkeyList.map((monkey) => {
         return new Monkey(monkey);
@@ -79,12 +74,6 @@ function prepareMonkeys() {
 
 function executeRounds(roundsCount, worryDivider) {
     for(let i = 1; i<= roundsCount; i++) {
-        // console.log("Round number: " + i);
-        if(i === 16) {
-            showLogs = true;
-        } else {
-            showLogs = false
-        }
         monkeyList.forEach((monkey, monkeyIndex) => {
             monkey.inspectItems(worryDivider);
         })
