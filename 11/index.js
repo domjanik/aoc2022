@@ -14,29 +14,45 @@ class Monkey {
     onConditionNotMet;
     operation;
     thrownItems = BigInt(0);
+    agilityModifier
     constructor(monkey) {
-        this.items = monkey[1].replaceAll('  Starting items: ', '').split(', ').map(item => Number(item));
+        this.items = monkey[1].replaceAll('  Starting items: ', '').split(', ').map(item => BigInt(item));
         this.divider = BigInt(monkey[3].replaceAll('  Test: divisible by ', ''));
         this.onConditionMet = BigInt(monkey[4].replaceAll('    If true: throw to monkey ', ''));
         this.onConditionNotMet = BigInt(monkey[5].replaceAll('    If false: throw to monkey ', ''));
-        this.operation = (value) => eval(monkey[2].replaceAll('Operation: new = ', '').replaceAll('old', value));
+
+        let toExecute = monkey[2].replaceAll('  Operation: new = ', '');
+        this.agilityModifier = toExecute.split(' ')[2] === 'old' ? 'old' : BigInt(toExecute.split(' ')[2]);
+
+        this.operation = (value) => {
+            if(toExecute.includes("+")) {
+                if(this.agilityModifier === 'old') {
+                    return value + value;
+                } else {
+                    return value + this.agilityModifier; 
+                }
+            } else {
+                if(this.agilityModifier === 'old') {
+                    return value * value;
+                } else {
+                    return this.agilityModifier * value;
+                }
+            }
+            // let operationToExecute = .replaceAll('old', value);
+            // console.log(operationToExecute);
+            return eval(operationToExecute);
+        };
     }
 
     inspectItems(worryDivider) {
         this.items.forEach((item) => {
             let worryLevel = BigInt(this.operation(item));
-            showLogs && console.log('Monkey inspects an item with a worry level of ' + item);
-            showLogs && console.log('Worry level after operation is ' + worryLevel);
             worryLevel = worryLevel / worryDivider;
-            showLogs && console.log('Monkey gets bored with item. Worry level is divided by 3 to ' + worryLevel); 
+            // showLogs && console.log('item: ' + item + " worryLevel: " + worryLevel + " Dividable :" + (worryLevel % this.divider === 0n) + " goes to Monkey " + (worryLevel % this.divider === 0n ? this.onConditionMet : this.onConditionNotMet))
             if(worryLevel % this.divider === 0n) {
-                showLogs && console.log('Current worry level is divisible by ' + this.divider);
                 monkeyList[this.onConditionMet].items.push(worryLevel);
-                showLogs && console.log('Item with worry level ' + worryLevel + ' is thrown to monkey ' + this.onConditionMet);
 
             } else {
-                showLogs && console.log('Current worry level is not divisible by ' + this.divider)
-                showLogs && console.log('Item with worry level ' + worryLevel + ' is thrown to monkey ' + this.onConditionNotMet);
                 monkeyList[this.onConditionNotMet].items.push(worryLevel);
             }
             this.thrownItems++;
@@ -60,28 +76,23 @@ function prepareMonkeys() {
 }
 
 function executeRounds(roundsCount, worryDivider) {
-    showLogs = false;
-    for(let i = 0; i< roundsCount; i++) {
-        if(i == 19) {
+    for(let i = 1; i<= roundsCount; i++) {
+        // console.log("Round number: " + i);
+        if(i === 16) {
             showLogs = true;
+        } else {
+            showLogs = false
         }
-        console.log("Round number: " + i);
         monkeyList.forEach((monkey, monkeyIndex) => {
-            showLogs && console.log("Monkey  " + monkeyIndex);
-            if(i === 18 && monkeyIndex == 2) {
-                console.log(monkey.thrownItems);
-                console.log(monkey.items);
-            }
-
+            // showLogs && console.log('Monkey : ' + monkeyIndex + " ( " + monkey.thrownItems + " )")
             monkey.inspectItems(worryDivider);
         })
 
-        monkeyList.map((monkey, monkeyIndex) => {
-            console.log('Monkey ' + monkeyIndex + " inspected items " + monkey.thrownItems + " times and has items : " + monkey.items.join(", "));
-        });
+        // monkeyList.map((monkey, monkeyIndex) => {
+            // console.log('Monkey ' + monkeyIndex + " inspected items " + monkey.thrownItems + " times");
+        // });
     }
 
-    // console.log(monkeyList)
     let monkeyActivity = monkeyList.map(monkey => monkey.thrownItems).sort((a,b) => b > a ? 1 : b == a ? 0 : -1)
     console.log("Multiplify of most active monkeys: " + (monkeyActivity[0] * monkeyActivity[1] ))
 }
@@ -90,4 +101,4 @@ prepareMonkeys();
 // console.log("Part 1: ")
 // executeRounds(20, 3n);
 console.log("Part 2: ")
-executeRounds(20, 1n);
+executeRounds(1000, 1n);
